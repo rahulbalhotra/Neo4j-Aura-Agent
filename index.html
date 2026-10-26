@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neo4j Aura Agent • Knowledge Graph Chat</title>
+  <meta name="description" content="Direct web interface for Neo4j Aura Agent & MCP API knowledge base chat.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Markdown & Syntax Highlighting -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body class="theme-dark">
+  <div class="app-container">
+    
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo-wrapper">
+          <div class="neo-logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="6" cy="6" r="3" />
+              <circle cx="18" cy="6" r="3" />
+              <circle cx="18" cy="18" r="3" />
+              <circle cx="6" cy="18" r="3" />
+              <path d="M6 9v6M9 6h6M9 18h6M18 9v6M8.2 8.2l7.6 7.6" />
+            </svg>
+          </div>
+          <div>
+            <div class="app-title-row">
+              <h1 class="app-title">Neo4j Aura Agent</h1>
+              <span class="badge badge-accent">Knowledge Graph AI</span>
+            </div>
+            <p class="app-subtitle">Direct Client for Aura Agent & MCP Services</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Active Database / Instance Badge -->
+        <div id="instanceBadge" class="instance-badge" title="Detected Neo4j Aura Instance">
+          <span class="instance-dot"></span>
+          <span id="instanceNameText">Instance01 (8074d9d5)</span>
+        </div>
+
+        <!-- Connection Status Pill -->
+        <button id="connectionStatusBtn" class="status-pill status-connected" title="Click to view connection settings">
+          <span class="status-dot"></span>
+          <span id="connectionStatusText" class="status-label">Agent Ready</span>
+        </button>
+
+        <!-- Action Buttons -->
+        <button id="clearChatBtn" class="btn btn-secondary btn-icon" title="Clear current conversation">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          <span>Clear</span>
+        </button>
+
+        <button id="headerUploadBtn" class="btn btn-secondary" title="Upload Neo4j credential file (.env, .txt, .json)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <span>Upload Creds</span>
+        </button>
+
+        <button id="openSettingsBtn" class="btn btn-primary" title="Configure Aura API and MCP Credentials">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>Credentials & Setup</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="chat-viewport">
+      <div id="messagesContainer" class="messages-container">
+        
+        <!-- Welcome Screen (Visible on empty chat) -->
+        <div id="welcomeScreen" class="welcome-card">
+          <div class="welcome-icon-glow">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+          <h2>Query Your Neo4j Aura Knowledge Graph</h2>
+          <p class="welcome-desc">
+            Directly ask questions against your Aura Agent or Aura MCP service. Get answers grounded in nodes, relationships, and Cypher-powered GraphRAG.
+          </p>
+
+          <!-- Instance Status Banner -->
+          <div class="instance-info-card">
+            <div class="info-card-header">
+              <span class="info-tag">CONNECTED INSTANCE</span>
+              <span class="info-status-live">● Running</span>
+            </div>
+            <div class="info-card-body">
+              <div class="info-metric">
+                <span class="metric-label">Database</span>
+                <span class="metric-value">Instance01 (8074d9d5)</span>
+              </div>
+              <div class="info-metric">
+                <span class="metric-label">Graph Size</span>
+                <span class="metric-value">194 Nodes • 499 Relationships</span>
+              </div>
+              <div class="info-metric">
+                <span class="metric-label">Region</span>
+                <span class="metric-value">asia-southeast1 (GCP)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="prompt-suggestions">
+            <p class="suggestions-label">Try these sample queries:</p>
+            <div class="suggestions-grid">
+              <button class="suggestion-chip" data-query="Summarize what entities and relationships are available in this knowledge base.">
+                <span class="chip-icon">🌐</span>
+                <span class="chip-text">Summarize graph schema & entities</span>
+              </button>
+              <button class="suggestion-chip" data-query="What are the key insights and connections found in the database?">
+                <span class="chip-icon">💡</span>
+                <span class="chip-text">Extract key insights and connections</span>
+              </button>
+              <button class="suggestion-chip" data-query="Find the most connected nodes and explain how they relate to each other.">
+                <span class="chip-icon">🔗</span>
+                <span class="chip-text">Identify top connected nodes & paths</span>
+              </button>
+              <button class="suggestion-chip" data-query="Search for patterns in the graph and provide Cypher evidence.">
+                <span class="chip-icon">⚡</span>
+                <span class="chip-text">Search graph patterns with Cypher evidence</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Chat Input Bar -->
+    <footer class="chat-input-area">
+      <div class="input-container">
+        <form id="chatForm" class="chat-form">
+          <textarea
+            id="queryInput"
+            class="chat-textarea"
+            placeholder="Ask a question about your knowledge graph... (Press Enter to send, Shift+Enter for new line)"
+            rows="1"
+            required
+          ></textarea>
+          
+          <div class="input-actions">
+            <button type="button" id="stopBtn" class="btn btn-secondary btn-icon hidden" title="Stop query">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="6" width="12" height="12" rx="2" />
+              </svg>
+              <span>Stop</span>
+            </button>
+
+            <button type="submit" id="sendBtn" class="btn btn-accent btn-send" title="Send message">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+        </form>
+        <div class="input-footer-info">
+          <span>Connected via Neo4j Aura MCP & Agent API</span>
+          <span id="sessionDisplay" class="session-badge">Session: Default</span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Settings & Credentials Drawer Modal -->
+    <div id="settingsModal" class="modal-backdrop hidden">
+      <div class="modal-card" role="dialog" aria-labelledby="modalTitle">
+        
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <div class="modal-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 id="modalTitle" class="modal-title">Aura Agent & MCP Configuration</h2>
+              <p class="modal-subtitle">Manage OAuth Client Credentials & Agent Endpoints</p>
+            </div>
+          </div>
+          <button id="closeSettingsBtn" class="btn-close" aria-label="Close dialog">✕</button>
+        </div>
+
+        <form id="settingsForm" class="modal-body">
+          
+          <!-- File Upload Drop Zone -->
+          <div class="cred-upload-zone" id="credDropZone">
+            <input type="file" id="credFileInput" class="hidden" accept=".env,.txt,.json">
+            <div class="upload-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            <div class="upload-text">
+              <span class="upload-main-text"><strong>Click to upload</strong> or drag & drop credential file</span>
+              <span class="upload-sub-text">Supports .env, .txt, or .json downloaded from Neo4j Aura</span>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="browseFileBtn">Browse File</button>
+          </div>
+          <div id="uploadFeedback" class="upload-feedback hidden"></div>
+
+          <!-- Credential Preset Selector -->
+          <div class="form-group">
+            <label class="form-label">Saved Credential Profile</label>
+            <div class="profile-chips">
+              <button type="button" class="profile-chip active" id="profileAgent1Btn">
+                <span class="chip-badge">MCP</span>
+                <strong>Agent1</strong> (Aura MCP Agent)
+              </button>
+              <button type="button" class="profile-chip" id="profileCred1Btn">
+                <span class="chip-badge">AuraDB</span>
+                <strong>cred1</strong> (Instance01 API)
+              </button>
+              <button type="button" class="profile-chip" id="profileCustomBtn">
+                <strong>Custom</strong>
+              </button>
+            </div>
+          </div>
+
+          <!-- OAuth Client ID & Secret -->
+          <div class="credentials-card">
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label class="form-label" for="clientId">
+                  Client ID <span class="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="clientId"
+                  class="form-input form-input-mono"
+                  placeholder="e.g. UEyKHvIIQ3s2dIXne0ZHe9y1ZVJImEtP"
+                  required
+                >
+              </div>
+
+              <div class="form-group col-6">
+                <label class="form-label" for="clientSecret">
+                  Client Secret <span class="required">*</span>
+                </label>
+                <div class="input-password-wrapper">
+                  <input
+                    type="password"
+                    id="clientSecret"
+                    class="form-input form-input-mono"
+                    placeholder="Enter Client Secret"
+                    required
+                  >
+                  <button type="button" id="toggleSecretVisibility" class="btn-toggle-pw" title="Show/hide secret">👁️</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- OAuth Exchange Button -->
+            <div class="oauth-exchange-row">
+              <button type="button" id="exchangeOAuthTokenBtn" class="btn btn-accent btn-sm">
+                ⚡ Exchange for Bearer Token
+              </button>
+              <span id="tokenExpiryStatus" class="token-expiry-label">Token active (86400s)</span>
+            </div>
+          </div>
+
+          <!-- Connection Protocol -->
+          <div class="form-group">
+            <label class="form-label">Connection Protocol</label>
+            <div class="protocol-radio-group">
+              <label class="radio-card">
+                <input type="radio" name="connectionMode" value="mcp_jsonrpc" checked>
+                <div class="radio-card-content">
+                  <div class="radio-card-title">Neo4j Aura MCP Endpoint</div>
+                  <div class="radio-card-desc">Model Context Protocol JSON-RPC tool calling</div>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="connectionMode" value="aura_agent_rest">
+                <div class="radio-card-content">
+                  <div class="radio-card-title">Aura Agent REST API</div>
+                  <div class="radio-card-desc">Standard Aura Agent chat endpoint (JSON payload)</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Endpoint URL -->
+          <div class="form-group">
+            <label class="form-label" for="endpointUrl">
+              Agent / MCP Endpoint URL <span class="required">*</span>
+            </label>
+            <input
+              type="url"
+              id="endpointUrl"
+              class="form-input form-input-mono"
+              placeholder="https://mcp.neo4j.io/agent?project_id=...&agent_id=..."
+              required
+            >
+            <p class="form-help">
+              💡 <strong>From Aura Console:</strong> Navigate to <em>Aura Agents</em> &rarr; Click the <strong>⋮</strong> context menu on your Agent &rarr; Select <strong>Copy Agent MCP URL</strong>.
+            </p>
+            <div class="preset-links">
+              <span>Quick templates:</span>
+              <button type="button" class="btn-link" id="setUrlMcpAgentBtn">Aura Agent MCP URL Template</button>
+              <button type="button" class="btn-link" id="setUrlMcpInstanceBtn">Instance01 Endpoint</button>
+            </div>
+          </div>
+
+          <!-- Active Bearer Token (Auto populated by OAuth) -->
+          <div class="form-group">
+            <label class="form-label" for="authToken">
+              Active Bearer Token
+            </label>
+            <div class="input-password-wrapper">
+              <input
+                type="password"
+                id="authToken"
+                class="form-input form-input-mono"
+                placeholder="Bearer token (auto-generated from Client ID/Secret)"
+              >
+              <button type="button" id="toggleTokenVisibility" class="btn-toggle-pw" title="Show/hide token">👁️</button>
+            </div>
+          </div>
+
+          <!-- Session ID & MCP Tool -->
+          <div class="form-row">
+            <div class="form-group col-6" id="mcpConfigGroup">
+              <label class="form-label" for="mcpToolName">MCP Tool Function</label>
+              <input
+                type="text"
+                id="mcpToolName"
+                class="form-input"
+                value="execute_query"
+                placeholder="e.g. execute_query, run_cypher"
+              >
+            </div>
+            <div class="form-group col-6">
+              <label class="form-label" for="sessionId">Session ID</label>
+              <div class="input-action-wrapper">
+                <input
+                  type="text"
+                  id="sessionId"
+                  class="form-input"
+                  placeholder="Session UUID"
+                >
+                <button type="button" id="generateSessionBtn" class="btn btn-secondary btn-sm" title="New Session">New</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Connection Test Result Container -->
+          <div id="connectionTestStatus" class="test-status-box hidden">
+            <!-- Dynamic feedback on connection test -->
+          </div>
+
+          <!-- Modal Actions -->
+          <div class="modal-footer">
+            <button type="button" id="testConnectionBtn" class="btn btn-secondary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <span>Test Connection</span>
+            </button>
+
+            <div class="modal-footer-right">
+              <button type="button" id="cancelSettingsBtn" class="btn btn-secondary">Cancel</button>
+              <button type="submit" class="btn btn-accent">Save Credentials</button>
+            </div>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

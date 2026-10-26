@@ -1,0 +1,19 @@
+# Environment and credential files
+.env
+*.env
+*.env.local
+credentials.txt
+creds.txt
+*credential*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
